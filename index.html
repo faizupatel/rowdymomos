@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Munchie Munchies Menu</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      font-family: 'Quicksand', sans-serif;
+      padding: 20px;
+      color: #2c2c2c;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #fff, transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float 6s infinite linear;
+      z-index: 1;
+    }
+
+    .menu-container {
+      max-width: 900px;
+      margin: auto;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,248,255,0.9));
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.5);
+      animation: containerFloat 3s ease-in-out infinite alternate;
+      border: 3px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .menu-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s linear infinite;
+      pointer-events: none;
+    }
+
+    header h1 {
+      text-align: center;
+      font-size: 3.5rem;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #feca57);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textGradient 3s ease infinite, bounce 2s ease-in-out infinite;
+      margin-bottom: 30px;
+      text-shadow: 0 0 30px rgba(255,107,107,0.5);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(240,248,255,0.6));
+      backdrop-filter: blur(10px);
+      animation: sectionSlide 0.8s ease-out;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .section:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      border-color: rgba(255,107,107,0.5);
+    }
+
+    .section:nth-child(odd) {
+      background: linear-gradient(135deg, rgba(255,182,193,0.3), rgba(255,255,224,0.5));
+    }
+
+    .section:nth-child(even) {
+      background: linear-gradient(135deg, rgba(173,216,230,0.3), rgba(240,255,240,0.5));
+    }
+
+    .section h2 {
+      font-size: 2.2rem;
+      background: linear-gradient(45deg, #e74c3c, #f39c12, #e67e22, #d35400);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      border-left: 8px solid;
+      border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #feca57) 1;
+      padding-left: 15px;
+      animation: headerPulse 2s ease-in-out infinite, slideInLeft 0.6s ease;
+      font-weight: 600;
+      text-shadow: 0 0 20px rgba(231,76,60,0.3);
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    ul li {
+      font-size: 1.2rem;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(240,248,255,0.5));
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      border-left: 4px solid transparent;
+      animation: itemFadeIn 0.6s ease-out;
+      position: relative;
+      overflow: hidden;
+      font-weight: 500;
+    }
+
+    ul li::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    ul li:hover::before {
+      left: 100%;
+    }
+
+    ul li:hover {
+      transform: translateX(10px) scale(1.05);
+      background: linear-gradient(90deg, rgba(255,107,107,0.2), rgba(78,205,196,0.2));
+      border-left-color: #ff6b6b;
+      box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+      color: #2c2c2c;
+    }
+
+    ul li:nth-child(even):hover {
+      background: linear-gradient(90deg, rgba(69,183,209,0.2), rgba(254,202,87,0.2));
+      border-left-color: #45b7d1;
+      box-shadow: 0 8px 25px rgba(69,183,209,0.3);
+    }
+
+    ul li:active {
+      transform: scale(0.95);
+      background: linear-gradient(90deg, rgba(255,215,0,0.4), rgba(255,69,0,0.4));
+    }
+
+    .badge {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      font-weight: 600;
+      animation: badgePulse 2s ease-in-out infinite;
+      box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .must {
+      background: linear-gradient(45deg, #e91e63, #9c27b0);
+      animation: mustTryGlow 1.5s ease-in-out infinite alternate;
+      box-shadow: 0 4px 15px rgba(233,30,99,0.5);
+    }
+
+    .note {
+      font-size: 1rem;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: rgba(102,126,234,0.1);
+      font-weight: 600;
+      animation: noteFloat 3s ease-in-out infinite;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.1rem;
+      padding: 20px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(78,205,196,0.1));
+      animation: footerGlow 4s ease-in-out infinite;
+      font-weight: 500;
+    }
+
+    footer a {
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      transform: scale(1.1);
+      display: inline-block;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #fff, #f8f9fa);
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      animation: modalSlideIn 0.4s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border: 3px solid transparent;
+      background-clip: padding-box;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #feca57);
+      border-radius: 20px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .close:hover {
+      color: #ff6b6b;
+      transform: scale(1.2) rotate(90deg);
+    }
+
+    .modal h2 {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .modal img {
+      width: 100%;
+      max-width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin: 20px auto;
+      display: block;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .modal img:hover {
+      transform: scale(1.05);
+    }
+
+    .modal-info {
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .price-tag {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      display: inline-block;
+      margin: 15px 0;
+      animation: priceGlow 2s ease-in-out infinite;
+    }
+
+    /* Click effect */
+    .click-effect {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,107,0.8), transparent);
+      pointer-events: none;
+      animation: clickRipple 0.6s ease-out;
+      z-index: 9999;
+    }
+
+    /* Animations */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes containerFloat {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-10px) rotate(0.5deg); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
+    }
+
+    @keyframes textGradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    @keyframes sectionSlide {
+      0% {
+        opacity: 0;
+        transform: translateX(-50px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes headerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes slideInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes itemFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,107,107,0.4); }
+      50% { transform: scale(1.1); box-shadow: 0 6px 20px rgba(255,107,107,0.6); }
+    }
+
+    @keyframes mustTryGlow {
+      0% { box-shadow: 0 4px 15px rgba(233,30,99,0.5); }
+      100% { box-shadow: 0 6px 25px rgba(233,30,99,0.8), 0 0 30px rgba(233,30,99,0.3); }
+    }
+
+    @keyframes noteFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes footerGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,107,107,0.2); }
+      50% { box-shadow: 0 0 30px rgba(78,205,196,0.3); }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes priceGlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes clickRipple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Staggered animation delays */
+    .section:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-child(3) { animation-delay: 0.3s; }
+    .section:nth-child(4) { animation-delay: 0.4s; }
+    .section:nth-child(5) { animation-delay: 0.5s; }
+    .section:nth-child(6) { animation-delay: 0.6s; }
+
+    ul li:nth-child(1) { animation-delay: 0.1s; }
+    ul li:nth-child(2) { animation-delay: 0.2s; }
+    ul li:nth-child(3) { animation-delay: 0.3s; }
+    ul li:nth-child(4) { animation-delay: 0.4s; }
+    ul li:nth-child(5) { animation-delay: 0.5s; }
+    ul li:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header h1 { font-size: 2.5rem; }
+      .section h2 { font-size: 1.8rem; }
+      ul li { font-size: 1.1rem; }
+      .menu-container { padding: 20px; }
+      .modal-content { margin: 10% auto; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-container">
+    <header>
+      <h1>🌟 Munchie Munchies 🌟</h1>
+    </header>
+
+    <section class="section">
+      <h2>🍔 Burger Bonanza</h2>
+      <ul>
+        <li data-item="veg-burger">🥬 Veg Burger - ₹59</li>
+        <li data-item="veg-tandoori-burger">🌶️ Veg Tandoori Burger - ₹59</li>
+        <li data-item="veg-peri-peri-burger"><span class="badge">Bestseller</span> 🔥 Veg Peri Peri Burger - ₹69</li>
+        <li data-item="chicken-burger">🍗 Chicken Burger - ₹59</li>
+        <li data-item="chicken-peri-peri-burger">🌶️ Chicken Peri Peri Burger - ₹69</li>
+        <li data-item="chicken-tandoori-burger"><span class="badge must">Must Try</span> 🔥 Chicken Tandoori Burger - ₹69</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>🍕 Pizza Paradise</h2>
+      <ul>
+        <li data-item="veg-pizza">🥬 Veg Pizza - ₹139</li>
+        <li data-item="corn-pizza"><span class="badge must">Must Try</span> 🌽 Corn Pizza - ₹149</li>
+        <li data-item="paneer-pizza">🧀 Paneer Pizza - ₹149</li>
+        <li data-item="chicken-pizza">🍗 Chicken Pizza - ₹149</li>
+        <li data-item="chicken-schezwan-pizza"><span class="badge">Bestseller</span> 🌶️ Chicken Schezwan Pizza - ₹149</li>
+        <li data-item="chicken-peri-peri-pizza">🔥 Chicken Peri Peri Pizza - ₹159</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>🧇 Waffle Wonderland</h2>
+      <ul>
+        <li data-item="dark-chocolate-waffle">🍫 Dark Chocolate</li>
+        <li data-item="milk-chocolate-waffle">🥛 Milk Chocolate</li>
+        <li data-item="death-chocolate-waffle"><span class="badge">Bestseller</span> ☠️ Death by Chocolate Belgium</li>
+        <li data-item="oreo-waffle">🍪 Oreo Rowdy</li>
+        <li data-item="triple-chocolate-waffle">🍫 Triple Chocolate</li>
+        <li data-item="dark-white-waffle">⚫⚪ Dark & White Rowdy</li>
+      </ul>
+      <p class="note">✨ Single @ ₹69 | Sandwich @ ₹109 ✨</p>
+    </section>
+
+    <section class="section">
+      <h2>🍗 Chicken Bites Heaven</h2>
+      <ul>
+        <li data-item="chicken-tandoori-nuggets">🌶️ Chicken Tandoori Nuggets - ₹59</li>
+        <li data-item="chicken-popcorn">🍿 Chicken Popcorn - ₹59</li>
+        <li data-item="chicken-fingers">👆 Chicken Fingers - ₹69</li>
+        <li data-item="chicken-wings">🦅 Chicken Wings - ₹79</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>🥤 Refreshing Drinks</h2>
+      <ul>
+        <li data-item="mojito">🌿 Mojito - ₹49</li>
+        <li data-item="blue-lagoon"><span class="badge must">Must Try</span> 💙 Blue Lagoon - ₹49</li>
+        <li data-item="ginger-lemon-mocktail">🫚 Ginger Lemon Mocktail - ₹49</li>
+        <li data-item="orange-mocktail">🍊 Orange Mocktail - ₹49</li>
+        <li data-item="cold-coffee">☕ Cold Coffee - ₹69</li>
+        <li data-item="oreo-shake"><span class="badge">Bestseller</span> 🍪 Oreo Shake - ₹79</li>
+        <li data-item="kitkat-shake">🍫 Kit Kat Shake - ₹85</li>
+        <li data-item="mango-shake"><span class="badge must">Must Try</span> 🥭 Mango Thick Shake - ₹89</li>
+      </ul>
+    </section>
+    
+    <footer>
+      <p>🌟 Follow us on: 📺 YouTube | 📘 Facebook | 📸 Instagram 🌟</p>
+      <p>🌐 Visit us at: <a href="https://www.rowdymomo.com" target="_blank">www.rowdymomo.com</a> 🌐</p>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div id="itemModal" class="modal">
+    <div class="modal-content">
+      <span class="close">×</span>
+      <h2 id="modalTitle"></h2>
+      <img id="modalImage" src="" alt="">
+      <div class="modal-info">
+        <div id="modalPrice" class="price-tag"></div>
+        <p id="modalDescription"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Menu item data with images and descriptions
+    const menuData = {
+      'veg-burger': {
+        name: 'Veg Burger',
+        price: '₹59',
+        image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
+        description: 'Fresh vegetables with crispy lettuce, tomatoes, and our special sauce in a soft bun.'
+      },
+      'veg-tandoori-burger': {
+        name: 'Veg Tandoori Burger',
+        price: '₹59',
+        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
+        description: 'Spicy tandoori-flavored veggie patty with mint chutney and fresh vegetables.'
+      },
+      'veg-peri-peri-burger': {
+        name: 'Veg Peri Peri Burger',
+        price: '₹69',
+        image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=400&h=300&fit=crop',
+        description: 'Fiery peri-peri spiced veggie patty with cheese and fresh salad. Our bestseller!'
+      },
+      'chicken-burger': {
+        name: 'Chicken Burger',
+        price: '₹59',
+        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
+        description: 'Juicy grilled chicken breast with lettuce, tomato, and mayo in a toasted bun.'
+      },
+      'chicken-peri-peri-burger': {
+        name: 'Chicken Peri Peri Burger',
+        price: '₹69',
+        image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400&h=300&fit=crop',
+        description: 'Spicy peri-peri marinated chicken with cheese and fresh vegetables.'
+      },
+      'chicken-tandoori-burger': {
+        name: 'Chicken Tandoori Burger',
+        price: '₹69',
+        image: 'https://images.unsplash.com/photo-1571091655789-405eb7a3a3a8?w=400&h=300&fit=crop',
+        description: 'Tandoori-spiced chicken patty with mint chutney and onions. Must try!'
+      },
+      'veg-pizza': {
+        name: 'Veg Pizza',
+        price: '₹139',
+        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
+        description: 'Classic vegetarian pizza with bell peppers, onions, tomatoes, and cheese.'
+      },
+      'corn-pizza': {
+        name: 'Corn Pizza',
+        price: '₹149',
+        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
+        description: 'Sweet corn kernels with cheese and herbs on crispy pizza base. Must try!'
+      },
+      'paneer-pizza': {
+        name: 'Paneer Pizza',
+        price: '₹149',
+        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop',
+        description: 'Fresh paneer cubes with vegetables and mozzarella cheese.'
+      },
+      'chicken-pizza': {
+        name: 'Chicken Pizza',
+        price: '₹149',
+        image: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=300&fit=crop',
+        description: 'Tender chicken pieces with vegetables and cheese on thin crust.'
+      },
+      'chicken-schezwan-pizza': {
+        name: 'Chicken Schezwan Pizza',
+        price: '₹149',
+        image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop',
+        description: 'Spicy schezwan chicken with bell peppers and cheese. Bestseller!'
+      },
+      'chicken-peri-peri-pizza': {
+        name: 'Chicken Peri Peri Pizza',
+        price: '₹159',
+        image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=300&fit=crop',
+        description: 'Fiery peri-peri chicken with cheese and fresh herbs.'
+      },
+      'dark-chocolate-waffle': {
+        name: 'Dark Chocolate Waffle',
+        price: '₹69/₹109',
+        image: 'https://images.unsplash.com/photo-1562376552-0d160dcec1c6?w=400&h=300&fit=crop',
+        description: 'Rich dark chocolate waffle with chocolate sauce and whipped cream.'
+      },
+      'milk-chocolate-waffle': {
+        name: 'Milk Chocolate Waffle',
+        price: '₹69/₹109',
+        image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop',
+        description: 'Creamy milk chocolate waffle with chocolate chips and cream.'
+      },
+      'death-chocolate-waffle': {
+        name: 'Death by Chocolate Belgium',
+        price: '₹69/₹109',
+        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
+        description: 'Ultimate chocolate experience with
